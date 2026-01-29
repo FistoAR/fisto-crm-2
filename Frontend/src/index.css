@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+.hand-animation {
+  animation: handMove 1s ease-in-out infinite;
+}
+
+@keyframes handMove {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(8px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+
+/* Add to your global CSS file */
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.95);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.animate-slideOut {
+  animation: slideOut 0.25s ease-out forwards;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.25s ease-out forwards;
+}

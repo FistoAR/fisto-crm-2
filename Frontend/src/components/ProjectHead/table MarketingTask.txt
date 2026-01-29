@@ -1,0 +1,71 @@
+-- =============================================
+-- MARKETING TASK MANAGEMENT DATABASE SCHEMA
+-- =============================================
+
+-- Note: employee_details table already exists
+-- We're referencing employees where designation = 'Digital Marketing & HR'
+
+-- =============================================
+-- Marketing Task Categories Table
+-- =============================================
+CREATE TABLE marketing_task_categories (
+    category_id INT PRIMARY KEY AUTO_INCREMENT,
+    category_name VARCHAR(100) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE
+);
+
+-- Insert default categories
+INSERT INTO marketing_task_categories (category_name) VALUES 
+('Social Media'),
+('Email'),
+('Content'),
+('SEO'),
+('Analytics'),
+('Advertising');
+
+-- =============================================
+-- Marketing Tasks Table
+-- =============================================
+CREATE TABLE marketing_tasks (
+    task_id INT PRIMARY KEY AUTO_INCREMENT,
+    task_name VARCHAR(255) NOT NULL,
+    category_id INT NOT NULL,
+    task_type ENUM('Daily', 'Weekly', 'Monthly') NOT NULL DEFAULT 'Daily',
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (category_id) REFERENCES marketing_task_categories(category_id) ON DELETE RESTRICT
+);
+
+-- =============================================
+-- Task Assignments Table (WITHOUT employee FK)
+-- =============================================
+CREATE TABLE marketing_task_assignments (
+    assignment_id INT PRIMARY KEY AUTO_INCREMENT,
+    task_id INT NOT NULL,
+    employee_id VARCHAR(50) NOT NULL,
+    assigned_date DATE NOT NULL,
+    status ENUM('Not Started', 'In Progress', 'Completed', 'Overdue', 'Delayed') DEFAULT 'Not Started',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    -- Foreign key only for task_id
+    FOREIGN KEY (task_id) REFERENCES marketing_tasks(task_id) ON DELETE CASCADE,
+    
+    -- Index for employee_id (no foreign key)
+    INDEX idx_employee (employee_id),
+    
+    -- Unique constraint
+    UNIQUE KEY unique_task_employee_date (task_id, employee_id, assigned_date)
+);
+
+-- =============================================
+-- Additional Indexes
+-- =============================================
+CREATE INDEX idx_assignments_date ON marketing_task_assignments(assigned_date);
+CREATE INDEX idx_assignments_status ON marketing_task_assignments(status);
+CREATE INDEX idx_tasks_type ON marketing_tasks(task_type);
+CREATE INDEX idx_tasks_category ON marketing_tasks(category_id);
